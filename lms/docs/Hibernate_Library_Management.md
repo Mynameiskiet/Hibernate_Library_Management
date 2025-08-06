@@ -286,4 +286,3 @@ Hiển thị rõ thông báo thành công/thất bại; in ngắn gọn nguyên 
 ---
 
 **Kết thúc đề bài.**  
-*Chúc bạn hoàn thành tốt và học được nhiều điều từ bài tập này!*
