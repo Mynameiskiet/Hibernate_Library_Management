@@ -1,104 +1,138 @@
 package com.tuankiet.entities;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import com.tuankiet.enums.BorrowingStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Objects;
 
+/**
+* Represents a Borrowing record in the Library Management System.
+* 
+* @author congdinh2008
+* @version 1.0.0
+* @since 1.0.0
+*/
 @Entity
-@Table(name = "borrowings")
-public class Borrowing {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @NotNull(message = "Borrow date is required")
-    @Column(name = "borrow_date", nullable = false)
-    private LocalDate borrowDate;
-    
-    @NotNull(message = "Due date is required")
-    @Column(name = "due_date", nullable = false)
-    private LocalDate dueDate;
-    
-    @Column(name = "return_date")
-    private LocalDate returnDate;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private BorrowingStatus status = BorrowingStatus.BORROWED;
-    
-    @CreationTimestamp
-    @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate;
-    
-    @UpdateTimestamp
-    @Column(name = "updated_date")
-    private LocalDateTime updatedDate;
-    
-    @Version
-    private Long version;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false)
-    private Book book;
-    
-    // Constructors
-    public Borrowing() {}
-    
-    public Borrowing(Member member, Book book, LocalDate borrowDate, LocalDate dueDate) {
-        this.member = member;
-        this.book = book;
-        this.borrowDate = borrowDate;
-        this.dueDate = dueDate;
-        this.status = BorrowingStatus.BORROWED;
-    }
-    
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public LocalDate getBorrowDate() { return borrowDate; }
-    public void setBorrowDate(LocalDate borrowDate) { this.borrowDate = borrowDate; }
-    
-    public LocalDate getDueDate() { return dueDate; }
-    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
-    
-    public LocalDate getReturnDate() { return returnDate; }
-    public void setReturnDate(LocalDate returnDate) { this.returnDate = returnDate; }
-    
-    public BorrowingStatus getStatus() { return status; }
-    public void setStatus(BorrowingStatus status) { this.status = status; }
-    
-    public LocalDateTime getCreatedDate() { return createdDate; }
-    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
-    
-    public LocalDateTime getUpdatedDate() { return updatedDate; }
-    public void setUpdatedDate(LocalDateTime updatedDate) { this.updatedDate = updatedDate; }
-    
-    public Long getVersion() { return version; }
-    public void setVersion(Long version) { this.version = version; }
-    
-    public Member getMember() { return member; }
-    public void setMember(Member member) { this.member = member; }
-    
-    public Book getBook() { return book; }
-    public void setBook(Book book) { this.book = book; }
-    
-    // Helper methods
-    public boolean isOverdue() {
-        return status == BorrowingStatus.BORROWED && LocalDate.now().isAfter(dueDate);
-    }
-    
-    public void returnBook() {
-        this.status = BorrowingStatus.RETURNED;
-        this.returnDate = LocalDate.now();
-    }
+@Table(name = "Borrowings")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class Borrowing extends BaseEntity {
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "book_id", nullable = false)
+  private Book book;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id", nullable = false)
+  private Member member;
+
+  @Column(name = "borrow_date", nullable = false)
+  private LocalDate borrowDate;
+
+  @Column(name = "return_date")
+  private LocalDate returnDate;
+
+  @Column(name = "due_date", nullable = false)
+  private LocalDate dueDate;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private BorrowingStatus status;
+
+  public Borrowing() {
+  }
+
+  public Borrowing(Book book, Member member, LocalDate borrowDate, LocalDate dueDate, BorrowingStatus status) {
+      this.book = book;
+      this.member = member;
+      this.borrowDate = borrowDate;
+      this.dueDate = dueDate;
+      this.status = status;
+  }
+
+  public Book getBook() {
+      return book;
+  }
+
+  public void setBook(Book book) {
+      this.book = book;
+  }
+
+  public Member getMember() {
+      return member;
+  }
+
+  public void setMember(Member member) {
+      this.member = member;
+  }
+
+  public LocalDate getBorrowDate() {
+      return borrowDate;
+  }
+
+  public void setBorrowDate(LocalDate borrowDate) {
+      this.borrowDate = borrowDate;
+  }
+
+  public LocalDate getReturnDate() {
+      return returnDate;
+  }
+
+  public void setReturnDate(LocalDate returnDate) {
+      this.returnDate = returnDate;
+  }
+
+  public LocalDate getDueDate() {
+      return dueDate;
+  }
+
+  public void setDueDate(LocalDate dueDate) {
+      this.dueDate = dueDate;
+  }
+
+  public BorrowingStatus getStatus() {
+      return status;
+  }
+
+  public void setStatus(BorrowingStatus status) {
+      this.status = status;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+      Borrowing borrowing = (Borrowing) o;
+      return Objects.equals(book, borrowing.book) &&
+             Objects.equals(member, borrowing.member) &&
+             Objects.equals(borrowDate, borrowing.borrowDate);
+  }
+
+  @Override
+  public int hashCode() {
+      return Objects.hash(super.hashCode(), book, member, borrowDate);
+  }
+
+  @Override
+  public String toString() {
+      return "Borrowing{" +
+             "id=" + getId() +
+             ", book=" + (book != null ? book.getTitle() : "N/A") +
+             ", member=" + (member != null ? member.getFirstName() + " " + member.getLastName() : "N/A") +
+             ", borrowDate=" + borrowDate +
+             ", returnDate=" + returnDate +
+             ", dueDate=" + dueDate +
+             ", status=" + status +
+             '}';
+  }
 }
