@@ -1,4 +1,4 @@
-package com.tuankiet.exception;
+package com.tuankiet.exceptions;
 
 public class DuplicateResourceException extends RuntimeException {
     
