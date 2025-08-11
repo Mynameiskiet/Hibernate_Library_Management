@@ -1,34 +1,43 @@
-package com.tuankiet.dto.response;
+package com.tuankiet.dto.request;
 
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.util.Objects;
 import java.util.UUID;
 
 /**
-* DTO for Author response.
+* DTO for updating an existing Author.
 * 
 * @author congdinh2008
 * @version 1.0.0
 * @since 1.0.0
 */
-public class AuthorResponse {
-  private UUID id;
-  private String firstName;
-  private String lastName;
-  private String biography;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
+public class UpdateAuthorRequest {
 
-  public AuthorResponse() {
+  @NotNull(message = "Author ID cannot be null")
+  private UUID id;
+
+  @NotBlank(message = "First name cannot be blank")
+  @Size(max = 255, message = "First name cannot exceed 255 characters")
+  private String firstName;
+
+  @NotBlank(message = "Last name cannot be blank")
+  @Size(max = 255, message = "Last name cannot exceed 255 characters")
+  private String lastName;
+
+  @Size(max = 4000, message = "Biography cannot exceed 4000 characters")
+  private String biography;
+
+  public UpdateAuthorRequest() {
   }
 
-  public AuthorResponse(UUID id, String firstName, String lastName, String biography, LocalDateTime createdAt, LocalDateTime updatedAt) {
+  public UpdateAuthorRequest(UUID id, String firstName, String lastName, String biography) {
       this.id = id;
       this.firstName = firstName;
       this.lastName = lastName;
       this.biography = biography;
-      this.createdAt = createdAt;
-      this.updatedAt = updatedAt;
   }
 
   public UUID getId() {
@@ -63,49 +72,29 @@ public class AuthorResponse {
       this.biography = biography;
   }
 
-  public LocalDateTime getCreatedAt() {
-      return createdAt;
-  }
-
-  public void setCreatedAt(LocalDateTime createdAt) {
-      this.createdAt = createdAt;
-  }
-
-  public LocalDateTime getUpdatedAt() {
-      return updatedAt;
-  }
-
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-      this.updatedAt = updatedAt;
-  }
-
   @Override
   public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-      AuthorResponse that = (AuthorResponse) o;
+      UpdateAuthorRequest that = (UpdateAuthorRequest) o;
       return Objects.equals(id, that.id) &&
              Objects.equals(firstName, that.firstName) &&
              Objects.equals(lastName, that.lastName) &&
-             Objects.equals(biography, that.biography) &&
-             Objects.equals(createdAt, that.createdAt) &&
-             Objects.equals(updatedAt, that.updatedAt);
+             Objects.equals(biography, that.biography);
   }
 
   @Override
   public int hashCode() {
-      return Objects.hash(id, firstName, lastName, biography, createdAt, updatedAt);
+      return Objects.hash(id, firstName, lastName, biography);
   }
 
   @Override
   public String toString() {
-      return "AuthorResponse{" +
+      return "UpdateAuthorRequest{" +
              "id=" + id +
              ", firstName='" + firstName + '\'' +
              ", lastName='" + lastName + '\'' +
              ", biography='" + biography + '\'' +
-             ", createdAt=" + createdAt +
-             ", updatedAt=" + updatedAt +
              '}';
   }
 }

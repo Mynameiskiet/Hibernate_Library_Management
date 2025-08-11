@@ -1,34 +1,56 @@
-package com.tuankiet.dto.response;
+package com.tuankiet.dto.request;
 
 import com.tuankiet.enums.BookCategory;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
-* DTO for Book response.
+* DTO for updating an existing Book.
 * 
 * @author congdinh2008
 * @version 1.0.0
 * @since 1.0.0
 */
-public class BookResponse {
-  private UUID id;
-  private String title;
-  private String isbn;
-  private Integer publicationYear;
-  private BookCategory category;
-  private Integer availableCopies;
-  private Integer totalCopies;
-  private AuthorResponse author;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
+public class UpdateBookRequest {
 
-  public BookResponse() {
+  @NotNull(message = "Book ID cannot be null")
+  private UUID id;
+
+  @NotBlank(message = "Title cannot be blank")
+  @Size(max = 255, message = "Title cannot exceed 255 characters")
+  private String title;
+
+  @NotBlank(message = "ISBN cannot be blank")
+  @Pattern(regexp = "^(?:ISBN(?:-13)?:?)(?=[0-9]{13}$)([0-9]{3}-){2}[0-9]{3}[0-9X]$", message = "Invalid ISBN-13 format")
+  private String isbn;
+
+  @Min(value = 1000, message = "Publication year must be a valid year (e.g., 1900)")
+  private Integer publicationYear;
+
+  @NotNull(message = "Category cannot be null")
+  private BookCategory category;
+
+  @Min(value = 0, message = "Available copies cannot be negative")
+  @NotNull(message = "Available copies cannot be null")
+  private Integer availableCopies;
+
+  @Min(value = 1, message = "Total copies must be at least 1")
+  @NotNull(message = "Total copies cannot be null")
+  private Integer totalCopies;
+
+  @NotNull(message = "Author ID cannot be null")
+  private UUID authorId;
+
+  public UpdateBookRequest() {
   }
 
-  public BookResponse(UUID id, String title, String isbn, Integer publicationYear, BookCategory category, Integer availableCopies, Integer totalCopies, AuthorResponse author, LocalDateTime createdAt, LocalDateTime updatedAt) {
+  public UpdateBookRequest(UUID id, String title, String isbn, Integer publicationYear, BookCategory category, Integer availableCopies, Integer totalCopies, UUID authorId) {
       this.id = id;
       this.title = title;
       this.isbn = isbn;
@@ -36,9 +58,7 @@ public class BookResponse {
       this.category = category;
       this.availableCopies = availableCopies;
       this.totalCopies = totalCopies;
-      this.author = author;
-      this.createdAt = createdAt;
-      this.updatedAt = updatedAt;
+      this.authorId = authorId;
   }
 
   public UUID getId() {
@@ -97,35 +117,19 @@ public class BookResponse {
       this.totalCopies = totalCopies;
   }
 
-  public AuthorResponse getAuthor() {
-      return author;
+  public UUID getAuthorId() {
+      return authorId;
   }
 
-  public void setAuthor(AuthorResponse author) {
-      this.author = author;
-  }
-
-  public LocalDateTime getCreatedAt() {
-      return createdAt;
-  }
-
-  public void setCreatedAt(LocalDateTime createdAt) {
-      this.createdAt = createdAt;
-  }
-
-  public LocalDateTime getUpdatedAt() {
-      return updatedAt;
-  }
-
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-      this.updatedAt = updatedAt;
+  public void setAuthorId(UUID authorId) {
+      this.authorId = authorId;
   }
 
   @Override
   public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-      BookResponse that = (BookResponse) o;
+      UpdateBookRequest that = (UpdateBookRequest) o;
       return Objects.equals(id, that.id) &&
              Objects.equals(title, that.title) &&
              Objects.equals(isbn, that.isbn) &&
@@ -133,19 +137,17 @@ public class BookResponse {
              category == that.category &&
              Objects.equals(availableCopies, that.availableCopies) &&
              Objects.equals(totalCopies, that.totalCopies) &&
-             Objects.equals(author, that.author) &&
-             Objects.equals(createdAt, that.createdAt) &&
-             Objects.equals(updatedAt, that.updatedAt);
+             Objects.equals(authorId, that.authorId);
   }
 
   @Override
   public int hashCode() {
-      return Objects.hash(id, title, isbn, publicationYear, category, availableCopies, totalCopies, author, createdAt, updatedAt);
+      return Objects.hash(id, title, isbn, publicationYear, category, availableCopies, totalCopies, authorId);
   }
 
   @Override
   public String toString() {
-      return "BookResponse{" +
+      return "UpdateBookRequest{" +
              "id=" + id +
              ", title='" + title + '\'' +
              ", isbn='" + isbn + '\'' +
@@ -153,9 +155,7 @@ public class BookResponse {
              ", category=" + category +
              ", availableCopies=" + availableCopies +
              ", totalCopies=" + totalCopies +
-             ", author=" + author +
-             ", createdAt=" + createdAt +
-             ", updatedAt=" + updatedAt +
+             ", authorId=" + authorId +
              '}';
   }
 }
